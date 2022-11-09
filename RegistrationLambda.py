@@ -15,21 +15,22 @@ allTaxis = database["TaxiDetails"]
 
 def lambda_handler(event, context):
     noAdd = False
-    userAdd = False
-    taxiAdd = False
-    if "vehicleType" in event:
-        userAdd = True
+    is_user_Add = False
+    is_taxi_Add = False
+    if "vehicleType" not in event:
+        is_user_Add = True
         for x in allUsers.find():
             if event['email'] == x['email']:
                 noAdd = True
+                break
     else:
-        taxiAdd = True
+        is_taxi_Add = True
         for x in allTaxis.find():
             if event['email'] == x['email']:
                 noAdd = True
                 break
-               
-    if userAdd and not noAdd:
+
+    if is_user_Add and not noAdd:
         req = dict()
         req['name'] = event['name']
         # req['userid'] = event['name'] + random.randint(0, 9)
@@ -41,13 +42,13 @@ def lambda_handler(event, context):
             'status': 200,
             'description': 'Record ' + event['name'] + ' added'
         }
-    else:
+    elif is_user_Add and noAdd:
         return {
             'status': 500,
             'description': 'user already exist'
         }
-    
-    if taxiAdd and not noAdd:
+
+    if is_taxi_Add and not noAdd:
         req = dict()
         req['name'] = event['name']
         # req['userid'] = event['name'] + random.randint(0, 9)
@@ -61,10 +62,10 @@ def lambda_handler(event, context):
         return {
             'status': 200,
             'description': 'Record ' + event['name'] + ' added'
-            }
-    else:
-            return {
-                'status': 500,
-                'description': 'Taxi already exist'
-            }
-\
+        }
+    elif is_taxi_Add and noAdd:
+        return {
+            'status': 500,
+            'description': 'user already exist'
+        }
+
