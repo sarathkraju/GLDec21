@@ -1,0 +1,48 @@
+from pymongo import MongoClient
+import urllib.parse
+import certifi
+import random
+
+ca = certifi.where()
+username = urllib.parse.quote_plus('GLCapstone')
+password = urllib.parse.quote_plus('Capstone@2022')
+db_uri = "mongodb+srv://{}:{}@cluster0.tfzkg67.mongodb.net/test".format(username, password)
+aggregator_cli = MongoClient(db_uri, tlsCAFile=ca)
+database = aggregator_cli.CabMe
+allUsers = database["UserDetails"]
+allTaxis = database["TaxiDetails"]
+allTrips = database["TripDetails"]
+
+
+def lambda_handler(event, context):
+    # event to start trip
+    # response trip started
+    if 'tripstatus' in event['tripstatus'] and event['tripstatus'] == 'start':
+        return {
+            'status': 200,
+            'description': 'trip started'
+        }
+    # generate random number (1,10) for trip duration mock
+    trip_duration = random.randint(1, 10)
+    # end trip updated  event received
+    if 'tripstatus' in event['tripstatus'] and event['tripstatus'] == 'end':
+        for x in allTaxis.find():
+            if event['email'] == x['email']:
+                requesting_taxi = x
+                break
+        # get coordinates of taxi at end trip and update in trip table as end coordinate
+        # update random number as trip duration in trip table
+        end_trip_location = requesting_taxi['location']
+        query = {"_id": requesting_taxi["_id"]}
+        trip_update = {
+            "$set":
+                {
+                    "endpoint": end_trip_location,
+                    "duration": trip_duration
+                }
+            }
+        allTrips.update_one(query, trip_update)
+        return {
+            'status': 200,
+            'description': 'trip ended'
+        }
