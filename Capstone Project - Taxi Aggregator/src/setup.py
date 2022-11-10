@@ -33,6 +33,7 @@ if polygon!='':
     DB_NAME = 'CabMe'
     USER_COLLECTION = 'UserDetails'
     TAXI_COLLECTION = 'TaxiDetails'
+    TRIP_COLLECTION = 'TripDetails'
 
     # This will initiate connection to the mongodb
     db_handle = MongoClient("mongodb+srv://GLCapstone:"  + urllib.parse.quote("Capstone@2022") + "@cluster0.tfzkg67.mongodb.net/test")
@@ -99,6 +100,8 @@ if polygon!='':
             taxi_collection.insert_many(taxi_data) 
         else:
             taxi_collection.insert_one(taxi_data)
+    # This creates and return a pointer to the users collection
+    trip_collection = cabMe_dbh[TRIP_COLLECTION]
 else:
     print('This place does not have enough Geodata. Please try with another city') 
                
