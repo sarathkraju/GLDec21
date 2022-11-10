@@ -17,32 +17,41 @@ allTrips = database["TripDetails"]
 def lambda_handler(event, context):
     # event to start trip
     # response trip started
-    if 'tripstatus' in event['tripstatus'] and event['tripstatus'] == 'start':
+    if 'tripstatus' in event and event['tripstatus'] == 'start':
         return {
             'status': 200,
             'description': 'trip started'
         }
     # generate random number (1,10) for trip duration mock
-    trip_duration = random.randint(1, 10)
+
     # end trip updated  event received
-    if 'tripstatus' in event['tripstatus'] and event['tripstatus'] == 'end':
+    if 'tripstatus' in event and event['tripstatus'] == 'end':
+        trip_duration = random.randint(1, 10)
         for x in allTaxis.find():
-            if event['email'] == x['email']:
+            if event['taxiemail'] == x['email']:
                 requesting_taxi = x
                 break
-        # get coordinates of taxi at end trip and update in trip table as end coordinate
-        # update random number as trip duration in trip table
-        end_trip_location = requesting_taxi['location']
-        query = {"_id": requesting_taxi["_id"]}
-        trip_update = {
-            "$set":
-                {
-                    "endpoint": end_trip_location,
-                    "duration": trip_duration
-                }
+        # end trip updated  event received
+        if 'tripstatus' in event and event['tripstatus'] == 'end':
+            trip_duration = random.randint(1, 10)
+            for x in allTaxis.find():
+                if event['taxiemail'] == x['email']:
+                    requesting_taxi = x
+                    break
+            # get coordinates of taxi at end trip and update in trip table as end coordinate
+            # update random number as trip duration in trip table
+            end_trip_location = requesting_taxi['location']
+            trip_record = allTrips.find_one({"taxiemail": requesting_taxi['email']})
+            query = {"_id": trip_record["_id"]}
+            trip_update = {
+                "$set":
+                    {
+                        "endpoint": end_trip_location,
+                        "duration": trip_duration
+                    }
             }
-        allTrips.update_one(query, trip_update)
-        return {
-            'status': 200,
-            'description': 'trip ended'
-        }
+            allTrips.update_one(query, trip_update)
+            return {
+                'status': 200,
+                'description': 'trip ended'
+            }
