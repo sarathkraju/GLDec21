@@ -1,0 +1,129 @@
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /book:
+    post:
+      parameters:
+        - in: body
+          name: Request
+          required: true
+          schema:
+            $ref: '#/definitions/requestCab'
+      responses:
+        '200':
+          description: OK (Request successful)
+          schema:
+            $ref: '#/definitions/requestCabResponse'
+        '204':
+          description: No Content
+      summary: Initiate request for booking cab
+      tags:
+        - Initiate request for booking cab
+  /addUser:
+    post:
+      parameters:
+        - in: body
+          name: Request
+          required: true
+          schema:
+            $ref: '#/definitions/addUserReq'
+      responses:
+        '200':
+          description: OK (Request successful)
+          schema:
+            $ref: '#/definitions/requestCabResponse'
+        '204':
+          description: No Content
+      summary: Initiate add user/taxi
+      tags:
+        - Initiate add user/taxi
+  /trip:
+    post:
+      parameters:
+        - in: body
+          name: Request
+          required: true
+          schema:
+            $ref: '#/definitions/tripReq'
+      responses:
+        '200':
+          description: OK (Request successful)
+          schema:
+            $ref: '#/definitions/requestCabResponse'
+        '204':
+          description: No Content
+      summary: Initiate start and end of trip by taxi
+      tags:
+        - Initiate start and end of trip by taxi
+definitions:
+  coordinates:
+    description: This specify facility applicant ECN
+    type: string
+  location:
+    properties:
+      coordinates:
+        items:
+          $ref: '#/definitions/coordinates'
+        type: array
+      type:
+        type: string
+    type: object
+  requestCab:
+    properties:
+      location:
+        $ref: '#/definitions/location'
+      username:
+        description: email address of user
+        type: string
+    type: object
+  addUserReq:
+    properties:
+      location:
+        $ref: '#/definitions/location'
+      name:
+        description: name of user/taxi
+        type: string
+      email:
+        description: email address of user/taxi
+        type: string
+      status:
+        description: status of user/taxi
+        type: string
+      vehicleType:
+        description: vehicle Type of taxi
+        type: string
+      tripStatus:
+        description: trip status of taxi
+        type: string
+    type: object
+  tripReq:
+    properties:
+      taxiemail:
+        description: email address of taxi
+        type: string
+      tripstatus:
+        description: start for trip start end for trip end
+        type: string
+    type: object
+  requestCabResponse:
+    properties:
+      descriptiom:
+        description: status of booking
+        type: string
+      status:
+        description: descriptiom
+        type: string
+info:
+  contact:
+    email: pahuja31@gmail.com
+    name: Pawan, Binay and Sarath
+  description: API to request cab
+  title: GL Cab Request
+  version: 1.0.0
+  x-swaggercreationdate: 08-11-2022
+  x-swaggerversion: '1'
+schemes:
+  - https
+swagger: '2.0'
