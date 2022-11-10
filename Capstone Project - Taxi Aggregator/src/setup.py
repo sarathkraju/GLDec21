@@ -1,6 +1,8 @@
 import urllib.parse
 from shapely.geometry import Polygon
 from shapely.geometry import Point
+import matplotlib.pyplot as plt
+from bson.son import SON
 import numpy as np
 import json
 # Imports MongoClient and GEOSPHERE for base level access to the local MongoDB and geospatial data
@@ -12,22 +14,28 @@ print('############### CAPSTONE PROJECT ####################')
 print('')
 print('### RUNNING SETUP ###')
 print('')
-# getting input from client for loginUser
+# getting country and city from client for setting boundary
 country = input('please enter country for setting up CabMe App: ')
 print('')
-city = input('please enter country for setting up CabMe App: ')
+city = input('please enter city for setting up CabMe App: ')
 print('')
 polygon=''
-
+print('### SETTING BOUNDARY ###')
+# with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=Bangalore+India&polygon_geojson=1&format=geojson") as url:
 with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q="+ city +"+"+country+"&polygon_geojson=1&format=geojson") as url:
     geoJsondata = json.load(url)
     for item in geoJsondata['features']:
-        if(item['geometry']['type'] == 'Polygon'):
+        if(item['geometry']['type'] == 'Polygon' and polygon==''):
            coordinates = item['geometry']['coordinates']
            polygon = Polygon(coordinates[0])           
            minx, miny, maxx, maxy = polygon.bounds
-                                  
+           # Plot the polygon
+           xp,yp = polygon.exterior.xy           
+           plt.plot(xp,yp)
+
+
 if polygon!='':
+    print('### BOUNDARY SET - PLEASE VERIFY POP UP WINDOW ###')
     RELATIVE_CONFIG_PATH = 'C:/Users/sarat/OneDrive/Documents/ACSE_IITM_GreatLearning/Capstone Project - Taxi Aggregator/config/'
     POINTS = []
     DB_NAME = 'CabMe'
@@ -35,6 +43,8 @@ if polygon!='':
     TAXI_COLLECTION = 'TaxiDetails'
     TRIP_COLLECTION = 'TripDetails'
 
+    print('### Connecting to MongoDB ###')
+    print('')
     # This will initiate connection to the mongodb
     db_handle = MongoClient("mongodb+srv://GLCapstone:"  + urllib.parse.quote("Capstone@2022") + "@cluster0.tfzkg67.mongodb.net/test")
 
@@ -44,24 +54,39 @@ if polygon!='':
     # We recreate the database with the same name
     cabMe_dbh = db_handle[DB_NAME]
 
+    print('### Connected to MongoDB ###')
+    print('')
+    print('### Loading User Data to UserDetails collection ###')
+    print('')
+  
+    
     # user data import
     # User document includes name, email and location
     # Reads UserDetails.json and loads them to user_collection
     with open(RELATIVE_CONFIG_PATH+USER_COLLECTION+'.json') as user_fh:
         # This loads the json file to user_data
         user_data = json.load(user_fh)
+        
+        while len(POINTS) < len(user_data) :
+            pnt = Point(np.random.uniform(minx, maxx) , np.random.uniform(miny, maxy))                
+            if polygon.contains(pnt):            
+                POINTS.append(pnt)
 
-        for user in user_data:
-            location = user['location']['coordinates']
-            print(location)
-            while len(POINTS) == 0 :
-                pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-                if polygon.contains(pnt):            
-                    POINTS.append(pnt)
-            user['location']['coordinates'][0] = POINTS[0].x
-            user['location']['coordinates'][1] = POINTS[0].y
+        for user,point in zip(user_data,POINTS):   
+            user['location']['coordinates'][0] = point.x
+            user['location']['coordinates'][1] = point.y
             POINTS=[]        
 
+        # Plot the polygon
+        xp,yp = polygon.exterior.xy
+        plt.plot(xp,yp)
+
+        # Plot the list of points
+        xs = [point.x for point in POINTS]
+        ys = [point.y for point in POINTS]
+        plt.scatter(xs, ys,color="red")
+        plt.show() 
+                   
         # This creates and return a pointer to the users collection
         user_collection = cabMe_dbh[USER_COLLECTION]
         # Create Index(es)
@@ -71,23 +96,28 @@ if polygon!='':
             user_collection.insert_many(user_data) 
         else:
             user_collection.insert_one(user_data)
-        
+    
+    print('### User data loaded successfully ###')
+    print('')
+    print('### Loading Taxi Data to UserDetails collection ###')
+    print('')
+       
     # Taxi data import
     # User document includes name, email, location and Type
     # Reads TaxiDetails.json and loads them to taxi_collection
     with open(RELATIVE_CONFIG_PATH+TAXI_COLLECTION+'.json') as taxi_fh:
         # This loads the json file to user_data
         taxi_data = json.load(taxi_fh)
+        
+        while len(POINTS) < len(taxi_data)*20 :
+            pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
+            if polygon.contains(pnt):            
+                POINTS.append(pnt)
 
-        for taxi in taxi_data:
-            location = taxi['location']['coordinates']
-            print(location)
-            while len(POINTS) == 0 :
-                pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-                if polygon.contains(pnt):            
-                    POINTS.append(pnt)
-            taxi['location']['coordinates'][0] = POINTS[0].x
-            taxi['location']['coordinates'][1] = POINTS[0].y
+        POINTS = POINTS[0::20]
+        for taxi,point in zip(taxi_data,POINTS):           
+            taxi['location']['coordinates'][0] = point.x
+            taxi['location']['coordinates'][1] = point.y
             POINTS=[]     
 
         # This creates and return a pointer to the users collection
@@ -100,9 +130,32 @@ if polygon!='':
             taxi_collection.insert_many(taxi_data) 
         else:
             taxi_collection.insert_one(taxi_data)
+        print('### Taxi data loaded successfully ###')
+        print('')
+
     # This creates and return a pointer to the users collection
     trip_collection = cabMe_dbh[TRIP_COLLECTION]
 else:
     print('This place does not have enough Geodata. Please try with another city') 
                
+print('######################## TESTING NEAREST TAXI ########################')
+ranval = np.random.shuffle(user_data)
+customer_loc = user_data[0]['location']
 
+print('######################## CUSTOMER LOCATION ########################')
+print(customer_loc)
+
+# Getting all taxis within a certain distance range from a customer
+print('######################## ALL TAXIS WITHIN 1 KILOMETER ########################')
+
+range_query = {'location': SON([("$near", customer_loc), ("$maxDistance", 1000)])}
+for doc in taxi_collection.find(range_query):
+    print('range query print')
+    print(doc)
+
+# Getting the nearest taxis to a customer
+print('######################## THE 2 NEAREST TAXIS ########################')
+
+nearest_query = {'location': {"$near": customer_loc}}
+for doc in taxi_collection.find(nearest_query).limit(2):
+    print(doc)
