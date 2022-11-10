@@ -33,7 +33,6 @@ def lambda_handler(event, context):
     if is_user_Add and not noAdd:
         req = dict()
         req['name'] = event['name']
-        # req['userid'] = event['name'] + random.randint(0, 9)
         req['email'] = event['email']
         location = event['location']
         req['location'] = location
@@ -51,7 +50,6 @@ def lambda_handler(event, context):
     if is_taxi_Add and not noAdd:
         req = dict()
         req['name'] = event['name']
-        # req['userid'] = event['name'] + random.randint(0, 9)
         req['email'] = event['email']
         req['vehicleType'] = event['vehicleType']
         req['status'] = event['status']
