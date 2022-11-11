@@ -15,12 +15,19 @@ allTrips = database["TripDetails"]
 
 
 def lambda_handler(event, context):
+    nearest_query = dict()
+    requesting_loc = dict()
+    requesting_user = dict()
     for x in allUsers.find():
         if event['email'] == x['email']:
             requesting_user = x
             requesting_loc = x['location']
+            nearest_query = {
+                'location': {"$near": requesting_loc},
+                'tripStatus' : "Available"
+                }
             break
-    nearest_query = {'location': {"$near": requesting_loc}}
+
     for doc in allTaxis.find(nearest_query).limit(1):
         query = {"_id": doc["_id"]}
         trip_update = {"$set": {"tripStatus": "Unavailable"}}
@@ -31,7 +38,8 @@ def lambda_handler(event, context):
             "startpoint": requesting_loc,
             "endpoint": "",
             "timestamp": datetime.now().isoformat(timespec='seconds'),
-            "duration": 0
+            "duration": 0,
+            "tripstatus": ""
         }
         allTrips.insert_one(trip_data)
         return {

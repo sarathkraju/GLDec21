@@ -17,6 +17,7 @@ allTrips = database["TripDetails"]
 def lambda_handler(event, context):
     # event to start trip received
     if 'tripstatus' in event and event['tripstatus'] == 'start':
+        # update trip data as inprogress
         # response trip started
         return {
             'status': 200,
@@ -47,15 +48,18 @@ def lambda_handler(event, context):
         trip_record = allTrips.find_one(
             {
                 "taxiemail": requesting_taxi['email'],
-                "useremail": event['useremail']
+                "useremail": event['useremail'],
+                "tripstatus": "inprogress"
             }
         )
         query = {"_id": trip_record["_id"]}
+        # update trip data as ended only where tripstatus is inprogress
         trip_update = {
             "$set":
                 {
                     "endpoint": end_trip_location,
-                    "duration": trip_duration
+                    "duration": trip_duration,
+                    "tripstatus": "ended"
                 }
         }
         allTrips.update_one(query, trip_update)
