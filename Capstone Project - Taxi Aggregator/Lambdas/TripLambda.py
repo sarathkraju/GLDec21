@@ -22,15 +22,7 @@ def lambda_handler(event, context):
             'status': 200,
             'description': 'trip started'
         }
-    # generate random number (1,10) for trip duration mock
-
     # end trip updated  event received
-    if 'tripstatus' in event and event['tripstatus'] == 'end':
-        trip_duration = random.randint(1, 10)
-        for x in allTaxis.find():
-            if event['taxiemail'] == x['email']:
-                requesting_taxi = x
-                break
         # end trip updated  event received
         if 'tripstatus' in event and event['tripstatus'] == 'end':
             trip_duration = random.randint(1, 10)
