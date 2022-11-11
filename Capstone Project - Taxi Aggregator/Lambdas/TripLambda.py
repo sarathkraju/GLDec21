@@ -18,13 +18,13 @@ def lambda_handler(event, context):
     requesting_taxi = dict()
     if 'tripstatus' in event:
         for x in allTaxis.find():
-            if event['taxiemail'] == x['email'] and event['useremail'] == x['email']:
+            if event['taxiemail'] == x['email']:
                 requesting_taxi = x
                 break
         if event['tripstatus'] == 'start':
             trip_record_start_trip_query = allTrips.find_one(
                 {
-                    "taxiemail": requesting_taxi['email'],
+                    "taxiemail": event['taxiemail'] ,
                     "useremail": event['useremail'],
                     "tripstatus": ""
                 }
@@ -33,17 +33,15 @@ def lambda_handler(event, context):
             trip_update_after_start = {
                 "$set":
                     {
-                        "endpoint": end_trip_location,
-                        "duration": trip_duration,
                         "tripstatus": "inprogress"
                     }
                 }
-        allTrips.update_one(query_start_trip, trip_update_after_start)
-        return {
-                'status': 200,
-                'description': 'trip started for user ' + event['useremail'] + "by taxi " + event['taxiemail']
-            }
-    elif event['tripstatus'] == 'end':
+            allTrips.update_one(query_start_trip, trip_update_after_start)
+            return {
+                    'status': 200,
+                    'description': 'trip started for user ' + event['useremail'] + "by taxi " + event['taxiemail']
+                }
+        elif event['tripstatus'] == 'end':
             # generated random number in range of 1-10 considered as trip duration
             trip_duration = random.randint(1, 10)
             # update status of taxi as Available again
@@ -81,10 +79,10 @@ def lambda_handler(event, context):
                 'status': 200,
                 'description': 'trip ended for user ' + event['useremail'] + "by taxi " + event['taxiemail']
             }
-    else:
-        return {
-                'status': 500,
-                'description': 'NO trip to start or end'
-            }
+        else:
+            return {
+                    'status': 500,
+                    'description': 'NO trip to start or end'
+                }
             
   
