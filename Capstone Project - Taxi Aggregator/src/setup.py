@@ -1,14 +1,14 @@
-import urllib.parse
-from shapely.geometry import Polygon
-from shapely.geometry import Point
-import matplotlib.pyplot as plt
-from bson.son import SON
-import numpy as np
 import json
-# Imports MongoClient and GEOSPHERE for base level access to the local MongoDB and geospatial data
-from pymongo import MongoClient, GEOSPHERE
+import urllib.parse
 # Imports datetime class to create timestamp for weather data storage
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
+from bson.son import SON
+# Imports MongoClient and GEOSPHERE for base level access to the local MongoDB and geospatial data
+from pymongo import GEOSPHERE, MongoClient
+from shapely.geometry import Point, Polygon
 
 print('############### CAPSTONE PROJECT ####################')
 print('')
@@ -138,24 +138,48 @@ if polygon!='':
 else:
     print('This place does not have enough Geodata. Please try with another city') 
                
-print('######################## TESTING NEAREST TAXI ########################')
-ranval = np.random.shuffle(user_data)
-customer_loc = user_data[0]['location']
+# print('######################## TESTING NEAREST TAXI ########################')
+# ranval = np.random.shuffle(user_data)
+# customer_loc = user_data[0]['location']
 
-print('######################## CUSTOMER LOCATION ########################')
-print(customer_loc)
+# print('######################## CUSTOMER LOCATION ########################')
+# print(customer_loc)
 
-# Getting all taxis within a certain distance range from a customer
-print('######################## ALL TAXIS WITHIN 1 KILOMETER ########################')
+# # Getting all taxis within a certain distance range from a customer
+# print('######################## ALL TAXIS WITHIN 1 KILOMETER ########################')
 
-range_query = {'location': SON([("$near", customer_loc), ("$maxDistance", 1000)])}
-for doc in taxi_collection.find(range_query):
-    print('range query print')
-    print(doc)
+# range_query = {'location': SON([("$near", customer_loc), ("$maxDistance", 1000)])}
+# for doc in taxi_collection.find(range_query):
+#     print('range query print')
+#     print(doc)
 
-# Getting the nearest taxis to a customer
-print('######################## THE 2 NEAREST TAXIS ########################')
+# # Getting the nearest taxis to a customer
+# print('######################## THE 2 NEAREST TAXIS ########################')
 
-nearest_query = {'location': {"$near": customer_loc}}
-for doc in taxi_collection.find(nearest_query).limit(2):
-    print(doc)
+# nearest_query = {'location': {"$near": customer_loc}}
+# for doc in taxi_collection.find(nearest_query).limit(2):
+#     print(doc)
+
+
+# simulator code for incrementing the taxi coordinates slowly
+# if incrementing spatial condition doesnt contain inside polygon boundary then randomly assign coordinates
+# timer need to be added for the script to run at certain interval
+newPoint = []
+for taxi in taxi_collection.find({"status": "Active"}):
+    _id= taxi["_id"]
+    xPoint = taxi['location']['coordinates'][0] + (maxx-minx)/10000
+    yPoint = taxi['location']['coordinates'][1] + (maxy-miny)/10000
+    if polygon.contains(pnt):            
+        newPoint.append(pnt)
+    else:
+        while len(newPoint) < len(taxi_data)*20 :
+            pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
+            if polygon.contains(pnt):            
+                newPoint.append(pnt)
+    
+    taxi['location']['coordinates'][0] = point.x
+    taxi['location']['coordinates'][1] = point.y
+
+    taxi_collection.update_one({"_id":_id}, {"$set":{"coordinates":[point.x, point.y]}})
+    newPoint = []
+
