@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import certifi
 import random
+from datetime import datetime
 
 ca = certifi.where()
 username = urllib.parse.quote_plus('GLCapstone')
@@ -34,6 +35,9 @@ def lambda_handler(event, context):
         req = dict()
         req['name'] = event['name']
         req['email'] = event['email']
+        req['country'] = event['country']
+        req['city'] = event['city']
+        req["timestamp"] = datetime.now().isoformat(timespec='seconds')
         location = event['location']
         req['location'] = location
         allUsers.insert_one(req)
@@ -54,6 +58,9 @@ def lambda_handler(event, context):
         req['vehicleType'] = event['vehicleType']
         req['status'] = event['status']
         req['tripStatus'] = event['tripStatus']
+        req['country'] = event['country']
+        req['city'] = event['city']
+        req["timestamp"] = datetime.now().isoformat(timespec='seconds')
         location = event['location']
         req['location'] = location
         allTaxis.insert_one(req)
