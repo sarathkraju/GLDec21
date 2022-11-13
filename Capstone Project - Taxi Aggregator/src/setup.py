@@ -27,6 +27,7 @@ with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q="+
     for item in geoJsondata['features']:
         if(item['geometry']['type'] == 'Polygon' and polygon==''):
            coordinates = item['geometry']['coordinates']
+           print(coordinates)
            polygon = Polygon(coordinates[0])           
            minx, miny, maxx, maxy = polygon.bounds
            # Plot the polygon
@@ -75,6 +76,9 @@ if polygon!='':
         for user,point in zip(user_data,POINTS):   
             user['location']['coordinates'][0] = point.x
             user['location']['coordinates'][1] = point.y
+            user['country'] = country
+            user['city'] = city
+            user['Timestamp'] = datetime.now()
             POINTS=[]        
 
         # Plot the polygon
@@ -118,6 +122,9 @@ if polygon!='':
         for taxi,point in zip(taxi_data,POINTS):           
             taxi['location']['coordinates'][0] = point.x
             taxi['location']['coordinates'][1] = point.y
+            taxi['country'] = country
+            taxi['city'] = city
+            taxi['Timestamp'] = datetime.now()
             POINTS=[]     
 
         # This creates and return a pointer to the users collection
@@ -138,48 +145,26 @@ if polygon!='':
 else:
     print('This place does not have enough Geodata. Please try with another city') 
                
-# print('######################## TESTING NEAREST TAXI ########################')
-# ranval = np.random.shuffle(user_data)
-# customer_loc = user_data[0]['location']
 
-# print('######################## CUSTOMER LOCATION ########################')
-# print(customer_loc)
-
-# # Getting all taxis within a certain distance range from a customer
-# print('######################## ALL TAXIS WITHIN 1 KILOMETER ########################')
-
-# range_query = {'location': SON([("$near", customer_loc), ("$maxDistance", 1000)])}
-# for doc in taxi_collection.find(range_query):
-#     print('range query print')
-#     print(doc)
-
-# # Getting the nearest taxis to a customer
-# print('######################## THE 2 NEAREST TAXIS ########################')
-
-# nearest_query = {'location': {"$near": customer_loc}}
-# for doc in taxi_collection.find(nearest_query).limit(2):
-#     print(doc)
-
-
-# simulator code for incrementing the taxi coordinates slowly
-# if incrementing spatial condition doesnt contain inside polygon boundary then randomly assign coordinates
-# timer need to be added for the script to run at certain interval
-newPoint = []
-for taxi in taxi_collection.find({"status": "Active"}):
-    _id= taxi["_id"]
-    xPoint = taxi['location']['coordinates'][0] + (maxx-minx)/10000
-    yPoint = taxi['location']['coordinates'][1] + (maxy-miny)/10000
-    if polygon.contains(pnt):            
-        newPoint.append(pnt)
-    else:
-        while len(newPoint) < len(taxi_data)*20 :
-            pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-            if polygon.contains(pnt):            
-                newPoint.append(pnt)
+# # simulator code for incrementing the taxi coordinates slowly
+# # if incrementing spatial condition doesnt contain inside polygon boundary then randomly assign coordinates
+# #timer need to be added for the script to run at certain interval
+# newPoint = []
+# for taxi in taxi_collection.find({"status": "Active"}):
+#     _id= taxi["_id"]
+#     xPoint = taxi['location']['coordinates'][0] + (maxx-minx)/10000
+#     yPoint = taxi['location']['coordinates'][1] + (maxy-miny)/10000
+#     if polygon.contains(pnt):            
+#         newPoint.append(pnt)
+#     else:
+#         while len(newPoint) < len(taxi_data)*20 :
+#             pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
+#             if polygon.contains(pnt):            
+#                 newPoint.append(pnt)
     
-    taxi['location']['coordinates'][0] = point.x
-    taxi['location']['coordinates'][1] = point.y
+#     taxi['location']['coordinates'][0] = point.x
+#     taxi['location']['coordinates'][1] = point.y
 
-    taxi_collection.update_one({"_id":_id}, {"$set":{"coordinates":[point.x, point.y]}})
-    newPoint = []
+#     taxi_collection.update_one({"_id":_id}, {"$set":{"coordinates":[point.x, point.y]}})
+#     newPoint = []
 
