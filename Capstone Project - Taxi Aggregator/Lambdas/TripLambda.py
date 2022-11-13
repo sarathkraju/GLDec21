@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         if event['tripstatus'] == 'start':
             trip_record_start_trip_query = allTrips.find_one(
                 {
-                    "taxiemail": event['taxiemail'] ,
+                    "taxiemail": event['taxiemail'],
                     "useremail": event['useremail'],
                     "tripstatus": ""
                 }
@@ -35,12 +35,12 @@ def lambda_handler(event, context):
                     {
                         "tripstatus": "inprogress"
                     }
-                }
+            }
             allTrips.update_one(query_start_trip, trip_update_after_start)
             return {
-                    'status': 200,
-                    'description': 'trip started for user ' + event['useremail'] + "by taxi " + event['taxiemail']
-                }
+                'status': 200,
+                'description': 'trip started for user-' + event['useremail'] + 'by taxi-' + event['taxiemail']
+            }
         elif event['tripstatus'] == 'end':
             # generated random number in range of 1-10 considered as trip duration
             trip_duration = random.randint(1, 10)
@@ -77,12 +77,11 @@ def lambda_handler(event, context):
             allTrips.update_one(query, trip_update)
             return {
                 'status': 200,
-                'description': 'trip ended for user ' + event['useremail'] + "by taxi " + event['taxiemail']
+                'description': 'trip ended for user' + event['useremail'] + 'by taxi-' + event['taxiemail']
             }
         else:
             return {
-                    'status': 500,
-                    'description': 'NO trip to start or end'
-                }
-            
-  
+                'status': 500,
+                'description': 'NO trip to start or end'
+            }
+
