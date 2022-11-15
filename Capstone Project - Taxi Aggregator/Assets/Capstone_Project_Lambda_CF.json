@@ -1,0 +1,120 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation Script to create Lambda Function to run the Python Code",
+	"Resources" : {
+		"CabBookingLambdaFunction" :{
+			"Type" : "AWS::Lambda::Function",
+			"Properties" : {
+				"Architectures" : ["x86_64"],
+				"Code" : {
+					"S3Bucket" : "capstone-project-lambdafunction-bucket",
+					"S3Key" : "CabBookingLambda.zip"
+				},				
+				"FunctionName" : "CabBookingLambda",
+				"Runtime" : "python3.9",
+				"Handler" : "CabBookingLambda.lambda_handler",
+				"Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                }
+			},
+            "DependsOn": [
+                "LambdaExecutionRole"
+            ]
+		},
+		"RegistrationLambdaFunction" :{
+			"Type" : "AWS::Lambda::Function",
+			"Properties" : {
+				"Architectures" : ["x86_64"],
+				"Code" : {
+					"S3Bucket" : "capstone-project-lambdafunction-bucket",
+					"S3Key" : "RegistrationLambda.zip"
+				},				
+				"FunctionName" : "RegistrationLambda",
+				"Runtime" : "python3.9",
+				"Handler": "RegistrationLambda.lambda_handler",
+				"Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                }
+			},
+            "DependsOn": [
+                "LambdaExecutionRole"
+            ]
+		},
+		"TripLambdaFunction" :{
+			"Type" : "AWS::Lambda::Function",
+			"Properties" : {
+				"Architectures" : ["x86_64"],
+				"Code" : {
+					"S3Bucket" : "capstone-project-lambdafunction-bucket",
+					"S3Key" : "TripLambda.zip"
+				},				
+				"FunctionName" : "TripLambda",
+				"Runtime" : "python3.9",
+				"Handler": "TripLambda.lambda_handler",
+				"Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                }
+			},
+            "DependsOn": [
+                "LambdaExecutionRole"
+            ]
+		},	
+		"LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+				"RoleName" : "lambdaexecutionrole",
+                "Policies": [
+                    {
+                        "PolicyName": "LambdaPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ],
+                                    "Effect": "Allow"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+	},
+	"Outputs": {		
+		"ARN" : {
+			"Value" : {"Ref" : "LambdaExecutionRole"}
+		}
+	}
+}

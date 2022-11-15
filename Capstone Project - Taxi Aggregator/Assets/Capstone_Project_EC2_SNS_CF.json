@@ -1,0 +1,81 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation Script to create EC2 Instances and SNS Topics",
+	"Parameters": {
+		"InstanceType": {
+            "Description": "EC2 instance type",
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "InstanceAMI": {
+            "Description": "EC2 instance AMI",
+            "Type": "String",
+            "Default": "ami-090fa75af13c156b4"
+        },
+		"KeyName":{
+			"Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+			"Type" : "AWS::EC2::KeyPair::KeyName",
+			"ConstraintDescription" : "Must be the name of an existing EC2 KeyPair"		
+		}
+	},
+	"Resources": {
+		"EC2SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+				"GroupDescription": "Enable HTTP Access via port 80 and SSH access",
+				"SecurityGroupIngress": [
+				 {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"},
+				 {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : "0.0.0.0/0"}
+				]
+			}
+		},
+		"EC2Instance": {
+			"Type": "AWS::EC2::Instance",
+            "Properties": {
+				"InstanceType": {"Ref" : "InstanceType"},
+				"ImageId": {"Ref" : "InstanceAMI"},
+				"SecurityGroups" : [{"Ref" : "EC2SecurityGroup"}],
+				"KeyName" : {"Ref" : "KeyName"}
+			}
+		},
+		"TaxiConfirmationUser" : {
+			"Type" : "AWS::SNS::Topic",
+			"Properties" : {
+				"TopicName" : "User_Notification"				
+			}
+		},
+		"TaxiConfirmationDriver" : {
+			"Type" : "AWS::SNS::Topic",
+			"Properties" : {
+				"TopicName" : "Taxi_Driver_Notification"				
+			}
+		},
+		"UserConfirmation" : {
+			"Type" : "AWS::SNS::Subscription",
+			"Properties" : {
+				"Endpoint" : "binay.ranjan@gmail.com",
+				"Protocol" : "email",
+				"TopicArn" : { "Ref" : "TaxiConfirmationUser" }
+			}
+		},
+		"DriverConfirmation" : {
+			"Type" : "AWS::SNS::Subscription",
+			"Properties" : {
+				"Endpoint" : "pahuja31@gmail.com",
+				"Protocol" : "email",
+				"TopicArn" : { "Ref" : "TaxiConfirmationDriver" }
+			}
+		}        
+	},
+	"Outputs": {
+		"InstanceId" : {
+			"Value" : {"Ref" : "EC2Instance"}
+		},
+		"ARN" : {
+			"Value" : {"Ref" : "TaxiConfirmationUser"}
+		},
+		"ARN" : {
+			"Value" : {"Ref" : "TaxiConfirmationDriver"}
+		}
+	}
+}
