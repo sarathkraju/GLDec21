@@ -61,7 +61,7 @@
 		"DriverConfirmation" : {
 			"Type" : "AWS::SNS::Subscription",
 			"Properties" : {
-				"Endpoint" : "pahuja31@gmail.com",
+				"Endpoint" : "pahuja1213@yahoo.com",
 				"Protocol" : "email",
 				"TopicArn" : { "Ref" : "TaxiConfirmationDriver" }
 			}
