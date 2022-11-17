@@ -2,6 +2,7 @@ import json
 import urllib.parse
 # Imports datetime class to create timestamp for weather data storage
 from datetime import datetime
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,15 +10,11 @@ from bson.son import SON
 # Imports MongoClient and GEOSPHERE for base level access to the local MongoDB and geospatial data
 from pymongo import GEOSPHERE, MongoClient
 from shapely.geometry import Point, Polygon
-
-print('############### CAPSTONE PROJECT ####################')
+print('## Setting up Country to India ##')
+country = 'India'
 print('')
-print('### RUNNING SETUP ###')
-print('')
-# getting country and city from client for setting boundary
-country = input('please enter country for setting up CabMe App: ')
-print('')
-city = input('please enter city for setting up CabMe App: ')
+print('## Setting up City to Bangalore ##')
+city = 'Bangalore'
 print('')
 polygon=''
 print('### SETTING BOUNDARY ###')
@@ -37,7 +34,7 @@ with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q="+
 
 if polygon!='':
     print('### BOUNDARY SET - PLEASE VERIFY POP UP WINDOW ###')
-    RELATIVE_CONFIG_PATH = 'C:/Users/sarat/OneDrive/Documents/ACSE_IITM_GreatLearning/Capstone Project - Taxi Aggregator/config/'
+    #RELATIVE_CONFIG_PATH = 'C:/Users/sarat/OneDrive/Documents/ACSE_IITM_GreatLearning/Capstone Project - Taxi Aggregator/config/'
     POINTS = []
     DB_NAME = 'CabMe'
     USER_COLLECTION = 'UserDetails'
@@ -50,7 +47,7 @@ if polygon!='':
     db_handle = MongoClient("mongodb+srv://GLCapstone:"  + urllib.parse.quote("Capstone@2022") + "@cluster0.tfzkg67.mongodb.net/test")
 
     # We drop the existing database including all the collections and data
-    db_handle.drop_database(DB_NAME)
+    #db_handle.drop_database(DB_NAME)
 
     # We recreate the database with the same name
     cabMe_dbh = db_handle[DB_NAME]
@@ -60,11 +57,12 @@ if polygon!='':
     print('### Loading User Data to UserDetails collection ###')
     print('')
   
-    
+    direc = os.path.dirname(__file__)    
+    userdetailsPath = os.path.join(direc, 'UserDetails.json')
     # user data import
     # User document includes name, email and location
     # Reads UserDetails.json and loads them to user_collection
-    with open(RELATIVE_CONFIG_PATH+USER_COLLECTION+'.json') as user_fh:
+    with open(userdetailsPath, 'r') as user_fh:
         # This loads the json file to user_data
         user_data = json.load(user_fh)
         
@@ -105,11 +103,12 @@ if polygon!='':
     print('')
     print('### Loading Taxi Data to UserDetails collection ###')
     print('')
-       
+
+    taxiDetailsPath = os.path.join(direc, 'TaxiDetails.json')   
     # Taxi data import
     # User document includes name, email, location and Type
     # Reads TaxiDetails.json and loads them to taxi_collection
-    with open(RELATIVE_CONFIG_PATH+TAXI_COLLECTION+'.json') as taxi_fh:
+    with open(taxiDetailsPath, 'r') as taxi_fh:
         # This loads the json file to user_data
         taxi_data = json.load(taxi_fh)
         
