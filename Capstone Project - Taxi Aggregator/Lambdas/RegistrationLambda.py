@@ -15,8 +15,8 @@ allUsers = database["UserDetails"]
 allTaxis = database["TaxiDetails"]
 AWS_REGION = 'us-east-1'
 sns_client = boto3.client('sns', region_name=AWS_REGION)
-topic_arn_user = "arn:aws:sns:us-east-1:456108202779:User_Notification"
-topic_arn_driver = "arn:aws:sns:us-east-1:456108202779:Taxi_Driver_Notification"
+topic_arn_user = "arn:aws:sns:us-east-1:374167692081:User_Notification"
+topic_arn_driver = "arn:aws:sns:us-east-1:374167692081:Taxi_Driver_Notification"
 
 
 def lambda_handler(event, context):
