@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import certifi
 import random
+import boto3
 
 ca = certifi.where()
 username = urllib.parse.quote_plus('GLCapstone')
@@ -12,6 +13,12 @@ database = aggregator_cli.CabMe
 allUsers = database["UserDetails"]
 allTaxis = database["TaxiDetails"]
 allTrips = database["TripDetails"]
+AWS_REGION = 'us-east-1'
+sns_client = boto3.client('sns', region_name=AWS_REGION)
+AWS_REGION = 'us-east-1'
+sns_client = boto3.client('sns', region_name=AWS_REGION)
+topic_arn_user = "arn:aws:sns:us-east-1:456108202779:User_Notification"
+topic_arn_driver = "arn:aws:sns:us-east-1:456108202779:Taxi_Driver_Notification"
 
 
 def lambda_handler(event, context):
@@ -37,6 +44,16 @@ def lambda_handler(event, context):
                     }
             }
             allTrips.update_one(query_start_trip, trip_update_after_start)
+            sns_client.publish(
+                TopicArn=topic_arn_user, 
+                Message=str("Trip started"), 
+                    Subject= str("Trip start confirmation")
+            )
+            sns_client.publish(
+                TopicArn=topic_arn_driver, 
+                 Message=str("Trip started"), 
+                Subject= str("Trip start confirmation")
+            )
             return {
                 'status': 200,
                 'description': 'trip started for user-' + event['useremail'] + 'by taxi-' + event['taxiemail']
@@ -75,6 +92,16 @@ def lambda_handler(event, context):
                     }
             }
             allTrips.update_one(query, trip_update)
+            sns_client.publish(
+                TopicArn=topic_arn_user, 
+                Message=str("Trip ended"), 
+                    Subject= str("Trip end confirmation")
+            )
+            sns_client.publish(
+                TopicArn=topic_arn_driver, 
+                 Message=str("Trip ended"), 
+                Subject= str("Trip end confirmation")
+            )
             return {
                 'status': 200,
                 'description': 'trip ended for user' + event['useremail'] + 'by taxi-' + event['taxiemail']

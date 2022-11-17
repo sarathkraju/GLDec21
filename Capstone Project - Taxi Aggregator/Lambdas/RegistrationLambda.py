@@ -3,6 +3,7 @@ import urllib.parse
 import certifi
 import random
 from datetime import datetime
+import boto3
 
 ca = certifi.where()
 username = urllib.parse.quote_plus('GLCapstone')
@@ -12,6 +13,10 @@ aggregator_cli = MongoClient(db_uri, tlsCAFile=ca)
 database = aggregator_cli.CabMe
 allUsers = database["UserDetails"]
 allTaxis = database["TaxiDetails"]
+AWS_REGION = 'us-east-1'
+sns_client = boto3.client('sns', region_name=AWS_REGION)
+topic_arn_user = "arn:aws:sns:us-east-1:456108202779:User_Notification"
+topic_arn_driver = "arn:aws:sns:us-east-1:456108202779:Taxi_Driver_Notification"
 
 
 def lambda_handler(event, context):
@@ -41,6 +46,11 @@ def lambda_handler(event, context):
         location = event['location']
         req['location'] = location
         allUsers.insert_one(req)
+        sns_client.publish(
+            TopicArn=topic_arn_user, 
+            Message=str("Welcome to cab me..."), 
+            Subject= str("User Registrstion confirmation")
+            )
         return {
             'status': 200,
             'description': 'Record ' + event['name'] + ' added'
@@ -64,10 +74,16 @@ def lambda_handler(event, context):
         location = event['location']
         req['location'] = location
         allTaxis.insert_one(req)
+        sns_client.publish(
+            TopicArn=topic_arn_driver, 
+            Message=str("Welcome to cab me..."), 
+            Subject= str("Driver Registrstion confirmation")
+            )
         return {
             'status': 200,
             'description': 'Record ' + event['name'] + ' added'
         }
+        
     elif is_taxi_Add and noAdd:
         return {
             'status': 500,
