@@ -1,0 +1,18 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation Script to create S3 Bucket to store the Lambda code for the Capstone Project",
+	"Resources" :{
+		"S3BuckettaxiDataUpdate": {
+			"Type" : "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": "capstone-project-taxidataupdate-bucket"
+			}
+		},
+		"S3BucketLambdaFunction": {
+			"Type" : "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": "capstone-project-lambdafunction-bucket"
+			}
+		}
+	}
+}

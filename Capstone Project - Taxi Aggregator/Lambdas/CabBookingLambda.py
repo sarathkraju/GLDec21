@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import urllib.parse
 import certifi
 from datetime import datetime
+import boto3
 
 ca = certifi.where()
 username = urllib.parse.quote_plus('GLCapstone')
@@ -12,6 +13,10 @@ database = aggregator_cli.CabMe
 allUsers = database["UserDetails"]
 allTaxis = database["TaxiDetails"]
 allTrips = database["TripDetails"]
+AWS_REGION = 'us-east-1'
+sns_client = boto3.client('sns', region_name=AWS_REGION)
+topic_arn_user = "arn:aws:sns:us-east-1:456108202779:User_Notification"
+topic_arn_driver = "arn:aws:sns:us-east-1:456108202779:Taxi_Driver_Notification"
 
 
 def lambda_handler(event, context):
@@ -42,6 +47,16 @@ def lambda_handler(event, context):
             "tripstatus": ""
         }
         allTrips.insert_one(trip_data)
+        sns_client.publish(
+            TopicArn=topic_arn_user, 
+            Message=str("your cab is on way type:" + str(doc['vehicleType']) + " Driver name: " + str(doc['name'])), 
+                Subject= str("Cab booking confirmation")
+            )
+        sns_client.publish(
+            TopicArn=topic_arn_driver, 
+            Message=str("You have got a booking for the user:" + requesting_user['name']), 
+                Subject= str("Cab booking confirmation")
+            )
         return {
             'status': 200,
             'description': 'your cab is on way type ' + doc['vehicleType'] + ' Driver name ' + doc['name']
