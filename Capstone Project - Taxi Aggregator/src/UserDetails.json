@@ -1,0 +1,62 @@
+[
+	{
+		"name": "Mohan",
+		"email": "Mohan.P@unknownmail.com",
+		"status": "Active",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270212,
+				13.0836937
+			]
+		}
+	},
+	{
+		"name": "Isaac",
+		"email": "Isaac.P@unknownmail.com",
+		"status": "InActive",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.240155,
+				13.0836937
+			]
+		}
+	},
+	{
+		"name": "Amir",
+		"email": "Amir.P@unknownmail.com",
+		"status": "Active",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.250300,
+				13.0836934
+			]
+		}
+	},
+	{
+		"name": "Ashok",
+		"email": "Ashok.P@unknownmail.com",
+		"status": "InActive",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.260244,
+				13.0836931
+			]
+		}
+	},
+	{
+		"name": "Leonard",
+		"email": "Leonard.P@unknownmail.com",
+		"status": "Active",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.290162,
+				13.0836933
+			]
+		}
+	}
+]
