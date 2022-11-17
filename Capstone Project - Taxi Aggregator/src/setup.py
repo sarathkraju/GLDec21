@@ -19,7 +19,6 @@ city = 'Bangalore'
 print('')
 polygon=''
 print('### SETTING BOUNDARY ###')
-# with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=Bangalore+India&polygon_geojson=1&format=geojson") as url:
 with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q="+ city +"+"+country+"&polygon_geojson=1&format=geojson") as url:
     geoJsondata = json.load(url)
     for item in geoJsondata['features']:
@@ -35,7 +34,6 @@ with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q="+
 
 if polygon!='':
     print('### BOUNDARY SET - PLEASE VERIFY POP UP WINDOW ###')
-    #RELATIVE_CONFIG_PATH = 'C:/Users/sarat/OneDrive/Documents/ACSE_IITM_GreatLearning/Capstone Project - Taxi Aggregator/config/'
     POINTS = []
     DB_NAME = 'CabMe'
     USER_COLLECTION = 'UserDetails'
@@ -48,7 +46,7 @@ if polygon!='':
     db_handle = MongoClient("mongodb+srv://GLCapstone:"  + urllib.parse.quote("Capstone@2022") + "@cluster0.tfzkg67.mongodb.net/test")
 
     # We drop the existing database including all the collections and data
-    #db_handle.drop_database(DB_NAME)
+    db_handle.drop_database(DB_NAME)
 
     # We recreate the database with the same name
     cabMe_dbh = db_handle[DB_NAME]
@@ -145,26 +143,3 @@ if polygon!='':
 else:
     print('This place does not have enough Geodata. Please try with another city') 
                
-
-# # simulator code for incrementing the taxi coordinates slowly
-# # if incrementing spatial condition doesnt contain inside polygon boundary then randomly assign coordinates
-# #timer need to be added for the script to run at certain interval
-# newPoint = []
-# for taxi in taxi_collection.find({"status": "Active"}):
-#     _id= taxi["_id"]
-#     xPoint = taxi['location']['coordinates'][0] + (maxx-minx)/10000
-#     yPoint = taxi['location']['coordinates'][1] + (maxy-miny)/10000
-#     if polygon.contains(pnt):            
-#         newPoint.append(pnt)
-#     else:
-#         while len(newPoint) < len(taxi_data)*20 :
-#             pnt = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-#             if polygon.contains(pnt):            
-#                 newPoint.append(pnt)
-    
-#     taxi['location']['coordinates'][0] = point.x
-#     taxi['location']['coordinates'][1] = point.y
-
-#     taxi_collection.update_one({"_id":_id}, {"$set":{"coordinates":[point.x, point.y]}})
-#     newPoint = []
-
