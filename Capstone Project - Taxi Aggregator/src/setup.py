@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+import urllib.request
 # Imports datetime class to create timestamp for weather data storage
 from datetime import datetime
 import os
