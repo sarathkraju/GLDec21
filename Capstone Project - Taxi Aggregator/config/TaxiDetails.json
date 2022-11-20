@@ -546,9 +546,149 @@
 		}
 	},
 	{
-		"name": "Hales",
-		"email": "Hales.P@unknownmail.com",
+		"name": "Glenn",
+		"email": "Glenn.P@unknownmail.com",
+        "vehicleType": "Basic",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "William",
+		"email": "William.P@unknownmail.com",
+        "vehicleType": "Deluxe",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Siraj",
+		"email": "Siraj.P@unknownmail.com",
         "vehicleType": "Luxury",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Chahal",
+		"email": "Chahal.P@unknownmail.com",
+        "vehicleType": "Basic",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Hooda",
+		"email": "Hooda.P@unknownmail.com",
+        "vehicleType": "Luxury",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Loki",
+		"email": "Loki.P@unknownmail.com",
+        "vehicleType": "Basic",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Trent",
+		"email": "Trent.P@unknownmail.com",
+        "vehicleType": "Basic",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Milne",
+		"email": "Milne.P@unknownmail.com",
+        "vehicleType": "Basic",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Mitchel",
+		"email": "Mitchel.P@unknownmail.com",
+        "vehicleType": "Deluxe",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Curran",
+		"email": "Curran.P@unknownmail.com",
+        "vehicleType": "Luxury",
+		"status": "Active",
+		"tripStatus": "Booked",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				80.270186,
+				13.0836935
+			]
+		}
+	},
+	{
+		"name": "Smith",
+		"email": "Smith.P@unknownmail.com",
+        "vehicleType": "Deluxe",
 		"status": "Active",
 		"tripStatus": "Booked",
 		"location": {
